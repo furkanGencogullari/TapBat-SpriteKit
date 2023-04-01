@@ -11,12 +11,16 @@ import GameplayKit
 class GameScene: SKScene {
     
     var bat = SKSpriteNode()
-    
     var batAnimation = SKAction()
     
     var sinceLastTouch: Double = 0
+    var gameStarted = Bool()
     
-    let backgroundSize = CGSize(width: 1920 * 0.8, height: 1080 * 0.8)
+    let backgroundSize = CGSize(width: 1920 * 1.4, height: 1080 * 1.4)
+    
+    
+    var wallPair = SKNode()
+    var moveAndRemoveWalls = SKAction()
     
     func setLayer(node: SKSpriteNode, name: String, zPosition: CGFloat, i: Int) {
         node.size = backgroundSize
@@ -40,11 +44,11 @@ class GameScene: SKScene {
     func createBackground() {
         for i in 0..<2 {
             let grass = SKSpriteNode(imageNamed: "bg1")
-            setLayer(node: grass, name: "grass", zPosition: 8, i: i)
-            grass.position = CGPoint(x: grass.position.x, y: grass.position.y + 220)
+            setLayer(node: grass, name: "grass", zPosition: 9, i: i)
+            grass.position = CGPoint(x: grass.position.x, y: grass.position.y + 370)
             
-            let floor = SKSpriteNode(imageNamed: "bg2")
-            setLayer(node: floor, name: "floor", zPosition: 7, i: i)
+            let ground = SKSpriteNode(imageNamed: "bg2")
+            setLayer(node: ground, name: "ground", zPosition: 8, i: i)
             
             let nearTrees = SKSpriteNode(imageNamed: "bg3")
             setLayer(node: nearTrees, name: "nearTrees", zPosition: 5, i: i)
@@ -76,7 +80,7 @@ class GameScene: SKScene {
     func createBat() {
         bat = SKSpriteNode(imageNamed: "bat2")
         bat.size = CGSize(width: 70, height: 70)
-        bat.position = CGPoint(x: self.frame.width / 2 - bat.frame.width, y: self.frame.height / 2)
+        bat.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 2)
         bat.zPosition = 6
         self.addChild(bat)
         
@@ -94,17 +98,67 @@ class GameScene: SKScene {
         batAnimation = SKAction.animate(with: batTextures, timePerFrame: 0.1)
     }
     
+    func createWalls() {
+        let topWall = SKSpriteNode(imageNamed: "wall")
+        let bottomWall = SKSpriteNode(imageNamed: "wall")
+        
+        topWall.position = CGPoint(x: self.frame.width - 50 , y: self.frame.height / 2 + 500)
+        bottomWall.position = CGPoint(x: self.frame.width - 50 , y: self.frame.height / 2 - 500)
+        
+        topWall.size = CGSize(width: 60, height: 800)
+        bottomWall.size = CGSize(width: 60, height: 800)
+        
+        topWall.physicsBody = SKPhysicsBody(rectangleOf: topWall.size)
+
+        topWall.physicsBody?.isDynamic = false
+        topWall.physicsBody?.affectedByGravity = false
+        
+        bottomWall.physicsBody = SKPhysicsBody(rectangleOf: bottomWall.size)
+
+        bottomWall.physicsBody?.isDynamic = false
+        bottomWall.physicsBody?.affectedByGravity = false
+        
+        topWall.zRotation = CGFloat(Double.pi)
+        
+        wallPair = SKNode()
+        
+        wallPair.addChild(topWall)
+        wallPair.addChild(bottomWall)
+        
+        let randomPosition = CGFloat.random(min: -200, max: 200)
+        wallPair.position.y = wallPair.position.y + randomPosition
+        wallPair.zPosition = 7
+        
+        wallPair.run(moveAndRemoveWalls)
+        
+        self.addChild(wallPair)
+    }
+    
+    func moveWalls() {
+        let spawnWalls = SKAction.run({
+            () in
+            self.createWalls()
+        })
+        
+        let delay = SKAction.wait(forDuration: 1.1)
+        
+        let spawnDelay = SKAction.sequence([spawnWalls, delay])
+        let spawnDelayForever = SKAction.repeatForever(spawnDelay)
+        self.run(spawnDelayForever)
+        
+        let distance = CGFloat(self.frame.width + wallPair.frame.width)
+        let moveWalls = SKAction.moveBy(x: -distance - 50, y: 0, duration: 0.004 * distance)
+        let removeWalls = SKAction.removeFromParent()
+        moveAndRemoveWalls = SKAction.sequence([moveWalls, removeWalls])
+    }
+    
+    
+    
 
     
     override func didMove(to view: SKView) {
-        
         createBackground()
         createBat()
-        
-
-        
-        
-
     }
     
     
@@ -123,15 +177,31 @@ class GameScene: SKScene {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         sinceLastTouch = 0
         
-        bat.physicsBody?.affectedByGravity = true
-        bat.physicsBody?.isDynamic = true
-        bat.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-        
-        
-        bat.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 80))
-        bat.physicsBody?.applyAngularImpulse(0.02)
-        
-        bat.run(batAnimation)
+        if gameStarted == false {
+            gameStarted = true
+            
+            moveWalls()
+            
+            bat.physicsBody?.affectedByGravity = true
+            bat.physicsBody?.isDynamic = true
+            
+
+            let moveBat = SKAction.moveBy(x: -50, y: 0, duration: 0.5)
+            
+            bat.run(batAnimation)
+            bat.run(moveBat)
+            bat.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+            bat.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 80))
+            bat.physicsBody?.applyAngularImpulse(0.02)
+            
+        } else {
+            
+            bat.run(batAnimation)
+            bat.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+            bat.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 80))
+            bat.physicsBody?.applyAngularImpulse(0.02)
+            
+        }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -167,11 +237,11 @@ class GameScene: SKScene {
         
         
         moveBackground(movementSpeed: 5, name: "grass")
-        moveBackground(movementSpeed: 5, name: "floor")
+        moveBackground(movementSpeed: 5, name: "ground")
         moveBackground(movementSpeed: 4, name: "nearTrees")
         moveBackground(movementSpeed: 3, name: "midTrees")
         moveBackground(movementSpeed: 2, name: "farTrees")
-        moveBackground(movementSpeed: 1, name: "stars")
+        moveBackground(movementSpeed: 1.3, name: "stars")
         moveBackground(movementSpeed: 1, name: "moon")
         
     }
