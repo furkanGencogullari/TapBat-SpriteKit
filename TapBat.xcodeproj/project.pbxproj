@@ -15,6 +15,7 @@
 		8E36531729D8065500446206 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E36531529D8065500446206 /* Main.storyboard */; };
 		8E36531929D8065800446206 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E36531829D8065800446206 /* Assets.xcassets */; };
 		8E36531C29D8065800446206 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E36531A29D8065800446206 /* LaunchScreen.storyboard */; };
+		8E36532329D846C700446206 /* CGFloatExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E36532229D846C700446206 /* CGFloatExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 		8E36531629D8065500446206 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8E36531829D8065800446206 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8E36531B29D8065800446206 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8E36532229D846C700446206 /* CGFloatExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGFloatExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +66,7 @@
 				8E36530F29D8065500446206 /* Actions.sks */,
 				8E36531129D8065500446206 /* GameScene.swift */,
 				8E36531329D8065500446206 /* GameViewController.swift */,
+				8E36532229D846C700446206 /* CGFloatExtensions.swift */,
 				8E36531529D8065500446206 /* Main.storyboard */,
 				8E36531829D8065800446206 /* Assets.xcassets */,
 				8E36531A29D8065800446206 /* LaunchScreen.storyboard */,
@@ -146,6 +149,7 @@
 			files = (
 				8E36531229D8065500446206 /* GameScene.swift in Sources */,
 				8E36531429D8065500446206 /* GameViewController.swift in Sources */,
+				8E36532329D846C700446206 /* CGFloatExtensions.swift in Sources */,
 				8E36530C29D8065500446206 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
