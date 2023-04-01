@@ -9,7 +9,6 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
-    
     var bat = SKSpriteNode()
     var batAnimation = SKAction()
     
@@ -17,14 +16,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var gameStarted = Bool()
     var died = Bool()
     var score = 0
+    var highscore = 0
     
     let scoreLabel = SKLabelNode()
+    let highScoreLabel = SKLabelNode()
     var restartButton = SKSpriteNode()
     
     let backgroundSize = CGSize(width: 1920 * 1.4, height: 1080 * 1.4)
     
     var wallPair = SKNode()
     var moveAndRemoveWalls = SKAction()
+    
+    let d = UserDefaults.standard
+    
     
     func restartGame() {
         self.removeAllChildren()
@@ -33,8 +37,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         score = 0
         gameStarted = false
         scoreLabel.isHidden = true
+        highScoreLabel.isHidden = false
         sinceLastTouch = 0
         startGame()
+    }
+    
+    func getHighscore() {
+        highscore = d.integer(forKey: "Score")
+        highScoreLabel.text = "Highscore: \(highscore)"
     }
     
     
@@ -187,6 +197,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
+
+    
+    
     func createRestartButton() {
         
         restartButton = SKSpriteNode(imageNamed: "restartButton")
@@ -219,6 +232,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         moveNodeUpAndDown(tapBatLogo, by: 15, duration: 1)
     }
     
+    func createHighscoreLabel() {
+        highScoreLabel.fontSize = 30
+        highScoreLabel.fontName = "Press Start 2P Regular"
+        highScoreLabel.fontColor = UIColor(red: 111/255, green: 49/255, blue: 152/255, alpha: 1)
+        highScoreLabel.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 9)
+        highScoreLabel.zPosition = 10
+        
+        self.addChild(highScoreLabel)
+    }
+    
     
     func moveWalls() {
         let spawnWalls = SKAction.run({
@@ -244,6 +267,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createBat()
         createScoreLabel()
         createTitleLogo()
+        getHighscore()
+        createHighscoreLabel()
         
         self.physicsWorld.contactDelegate = self
 
@@ -269,6 +294,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if died == false {
                 died = true
                 createRestartButton()
+                if score > highscore {
+                    d.set(score, forKey: "Score")
+                }
             }
         }
         
@@ -328,7 +356,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     override func update(_ currentTime: TimeInterval) {
-        
         //Bat Rotation
         sinceLastTouch += 0.1
         
@@ -356,6 +383,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if gameStarted == true {
             moveBackground(movementSpeed: 5, name: "logo", repeats: false)
+            highScoreLabel.isHidden = true
         }
     }
+
 }
