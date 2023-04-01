@@ -19,11 +19,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var score = 0
     
     let scoreLabel = SKLabelNode()
+    var restartButton = SKSpriteNode()
     
     let backgroundSize = CGSize(width: 1920 * 1.4, height: 1080 * 1.4)
     
     var wallPair = SKNode()
     var moveAndRemoveWalls = SKAction()
+    
+    func restartGame() {
+        self.removeAllChildren()
+        self.removeAllActions()
+        died = false
+        score = 0
+        gameStarted = false
+        scoreLabel.isHidden = true
+        sinceLastTouch = 0
+        startGame()
+    }
     
     
     func setLayer(node: SKSpriteNode, name: String, zPosition: CGFloat, i: Int) {
@@ -174,6 +186,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
+    func createRestartButton() {
+        
+        restartButton = SKSpriteNode(imageNamed: "restartButton")
+        restartButton.size = CGSize(width: 627 / 1.5, height: 160 / 1.5)
+        restartButton.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 2.6)
+        restartButton.zPosition = 8
+        
+        let moveUp = SKAction.moveBy(x: 0, y: 10, duration: 0.5)
+        let moveDown = SKAction.moveBy(x: 0, y: -10, duration: 0.5)
+        let sequence = SKAction.sequence([moveUp, moveDown])
+        let foreverSeq = SKAction.repeatForever(sequence)
+        restartButton.run(foreverSeq)
+        self.addChild(restartButton)
+        
+    }
+    
+    
     func moveWalls() {
         let spawnWalls = SKAction.run({
             () in
@@ -193,11 +222,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    override func didMove(to view: SKView) {
+    func startGame() {
         createBackground()
         createBat()
         createScoreLabel()
         self.physicsWorld.contactDelegate = self
+    }
+    
+    
+    override func didMove(to view: SKView) {
+        startGame()
     }
     
     
@@ -212,6 +246,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if died == false {
                 died = true
+                createRestartButton()
             }
         }
         
@@ -258,9 +293,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
             }
         }
+        
+        
+        for touch in touches {
+            let location = touch.location(in: self)
+            if died == true {
+                if restartButton.contains(location) == true {
+                    restartGame()
+                }
+            }
+        }
     }
     
-
+    
     override func update(_ currentTime: TimeInterval) {
         
         //Bat Rotation
