@@ -18,6 +18,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var died = Bool()
     var score = 0
     
+    let scoreLabel = SKLabelNode()
+    
     let backgroundSize = CGSize(width: 1920 * 1.4, height: 1080 * 1.4)
     
     var wallPair = SKNode()
@@ -161,6 +163,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
+    func createScoreLabel() {
+        scoreLabel.fontSize = 60
+        scoreLabel.fontName = "Press Start 2P Regular"
+        scoreLabel.fontColor = UIColor(red: 111/255, green: 49/255, blue: 152/255, alpha: 1)
+        scoreLabel.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 1.3)
+        scoreLabel.zPosition = 8
+        scoreLabel.isHidden = true
+        self.addChild(scoreLabel)
+    }
+    
+    
     func moveWalls() {
         let spawnWalls = SKAction.run({
             () in
@@ -183,8 +196,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         createBackground()
         createBat()
+        createScoreLabel()
         self.physicsWorld.contactDelegate = self
-        
     }
     
     
@@ -208,7 +221,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             && secondBody.categoryBitMask == PhysicsCategoryConstants.bat {
             
             score += 1
-            print(score)
+            scoreLabel.isHidden = false
+            scoreLabel.text = "\(score)"
         }
     }
     

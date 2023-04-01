@@ -17,6 +17,7 @@
 		8E36531C29D8065800446206 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E36531A29D8065800446206 /* LaunchScreen.storyboard */; };
 		8E36532329D846C700446206 /* CGFloatExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E36532229D846C700446206 /* CGFloatExtensions.swift */; };
 		8E36532529D89A0D00446206 /* PhysicsCategoryContants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E36532429D89A0D00446206 /* PhysicsCategoryContants.swift */; };
+		8E36532729D8A64800446206 /* PressStart2P-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E36532629D8A64800446206 /* PressStart2P-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,8 @@
 		8E36531B29D8065800446206 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8E36532229D846C700446206 /* CGFloatExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGFloatExtensions.swift; sourceTree = "<group>"; };
 		8E36532429D89A0D00446206 /* PhysicsCategoryContants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhysicsCategoryContants.swift; sourceTree = "<group>"; };
+		8E36532629D8A64800446206 /* PressStart2P-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PressStart2P-Regular.ttf"; sourceTree = "<group>"; };
+		8E36532829D8A74A00446206 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +66,7 @@
 		8E36530A29D8065500446206 /* TapBat */ = {
 			isa = PBXGroup;
 			children = (
+				8E36532829D8A74A00446206 /* Info.plist */,
 				8E36530B29D8065500446206 /* AppDelegate.swift */,
 				8E36530D29D8065500446206 /* GameScene.sks */,
 				8E36530F29D8065500446206 /* Actions.sks */,
@@ -73,6 +77,7 @@
 				8E36531529D8065500446206 /* Main.storyboard */,
 				8E36531829D8065800446206 /* Assets.xcassets */,
 				8E36531A29D8065800446206 /* LaunchScreen.storyboard */,
+				8E36532629D8A64800446206 /* PressStart2P-Regular.ttf */,
 			);
 			path = TapBat;
 			sourceTree = "<group>";
@@ -135,6 +140,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E36532729D8A64800446206 /* PressStart2P-Regular.ttf in Resources */,
 				8E36531729D8065500446206 /* Main.storyboard in Resources */,
 				8E36530E29D8065500446206 /* GameScene.sks in Resources */,
 				8E36531929D8065800446206 /* Assets.xcassets in Resources */,
@@ -230,6 +236,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSSiriUsageDescription = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -284,6 +291,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSSiriUsageDescription = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -303,6 +311,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ZW78XTS3N5;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TapBat/Info.plist;
+				INFOPLIST_KEY_NSSiriUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -334,6 +344,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ZW78XTS3N5;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TapBat/Info.plist;
+				INFOPLIST_KEY_NSSiriUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
