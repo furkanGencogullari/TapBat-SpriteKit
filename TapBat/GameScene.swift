@@ -8,19 +8,21 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var bat = SKSpriteNode()
     var batAnimation = SKAction()
     
     var sinceLastTouch: Double = 0
     var gameStarted = Bool()
+    var died = Bool()
+    var score = 0
     
     let backgroundSize = CGSize(width: 1920 * 1.4, height: 1080 * 1.4)
     
-    
     var wallPair = SKNode()
     var moveAndRemoveWalls = SKAction()
+    
     
     func setLayer(node: SKSpriteNode, name: String, zPosition: CGFloat, i: Int) {
         node.size = backgroundSize
@@ -31,6 +33,7 @@ class GameScene: SKScene {
         self.addChild(node)
     }
     
+    
     func moveBackground(movementSpeed: CGFloat, name: String) {
         enumerateChildNodes(withName: name) { node, error in
             let backgroundNode = node as! SKSpriteNode
@@ -40,6 +43,7 @@ class GameScene: SKScene {
             }
         }
     }
+    
     
     func createBackground() {
         for i in 0..<2 {
@@ -77,6 +81,7 @@ class GameScene: SKScene {
         
     }
     
+    
     func createBat() {
         bat = SKSpriteNode(imageNamed: "bat2")
         bat.size = CGSize(width: 70, height: 70)
@@ -89,6 +94,10 @@ class GameScene: SKScene {
         bat.physicsBody?.affectedByGravity = false
         bat.physicsBody?.isDynamic = false
         
+        bat.physicsBody?.categoryBitMask = PhysicsCategoryConstants.bat
+        bat.physicsBody?.collisionBitMask = PhysicsCategoryConstants.wall
+        bat.physicsBody?.contactTestBitMask = PhysicsCategoryConstants.wall
+        
         //Bat Animation
         var batTextures: [SKTexture] = []
         batTextures.append(SKTexture(imageNamed: "bat1"))
@@ -98,41 +107,59 @@ class GameScene: SKScene {
         batAnimation = SKAction.animate(with: batTextures, timePerFrame: 0.1)
     }
     
+    
     func createWalls() {
         let topWall = SKSpriteNode(imageNamed: "wall")
         let bottomWall = SKSpriteNode(imageNamed: "wall")
+        let scoreNode = SKSpriteNode()
         
-        topWall.position = CGPoint(x: self.frame.width - 50 , y: self.frame.height / 2 + 500)
-        bottomWall.position = CGPoint(x: self.frame.width - 50 , y: self.frame.height / 2 - 500)
+        topWall.position = CGPoint(x: self.frame.width - 50, y: self.frame.height / 2 + 500)
+        bottomWall.position = CGPoint(x: self.frame.width - 50, y: self.frame.height / 2 - 500)
+        scoreNode.position = CGPoint(x: self.frame.width - 50, y: self.frame.height / 2)
         
         topWall.size = CGSize(width: 60, height: 800)
         bottomWall.size = CGSize(width: 60, height: 800)
+        scoreNode.size = CGSize(width: 20, height: 200)
         
         topWall.physicsBody = SKPhysicsBody(rectangleOf: topWall.size)
-
         topWall.physicsBody?.isDynamic = false
         topWall.physicsBody?.affectedByGravity = false
         
         bottomWall.physicsBody = SKPhysicsBody(rectangleOf: bottomWall.size)
-
         bottomWall.physicsBody?.isDynamic = false
         bottomWall.physicsBody?.affectedByGravity = false
+        
+        scoreNode.physicsBody = SKPhysicsBody(rectangleOf: scoreNode.size)
+        scoreNode.physicsBody?.affectedByGravity = false
+        scoreNode.physicsBody?.isDynamic = false
+        
+        scoreNode.physicsBody?.categoryBitMask = PhysicsCategoryConstants.score
+        scoreNode.physicsBody?.collisionBitMask = .zero
+        scoreNode.physicsBody?.contactTestBitMask = PhysicsCategoryConstants.bat
+        
+        topWall.physicsBody?.categoryBitMask = PhysicsCategoryConstants.wall
+        topWall.physicsBody?.collisionBitMask = PhysicsCategoryConstants.bat
+        topWall.physicsBody?.contactTestBitMask = PhysicsCategoryConstants.bat
+        
+        bottomWall.physicsBody?.categoryBitMask = PhysicsCategoryConstants.wall
+        bottomWall.physicsBody?.collisionBitMask = PhysicsCategoryConstants.bat
+        bottomWall.physicsBody?.contactTestBitMask = PhysicsCategoryConstants.bat
         
         topWall.zRotation = CGFloat(Double.pi)
         
         wallPair = SKNode()
-        
         wallPair.addChild(topWall)
         wallPair.addChild(bottomWall)
+        wallPair.addChild(scoreNode)
         
         let randomPosition = CGFloat.random(min: -200, max: 200)
         wallPair.position.y = wallPair.position.y + randomPosition
         wallPair.zPosition = 7
-        
         wallPair.run(moveAndRemoveWalls)
         
         self.addChild(wallPair)
     }
+    
     
     func moveWalls() {
         let spawnWalls = SKAction.run({
@@ -153,32 +180,45 @@ class GameScene: SKScene {
     }
     
     
-    
-
-    
     override func didMove(to view: SKView) {
         createBackground()
         createBat()
+        self.physicsWorld.contactDelegate = self
+        
     }
     
     
-    func touchDown(atPoint pos : CGPoint) {
-
+    func didBegin(_ contact: SKPhysicsContact) {
+        let firstBody = contact.bodyA
+        let secondBody = contact.bodyB
+        
+        if firstBody.categoryBitMask == PhysicsCategoryConstants.bat
+            && secondBody.categoryBitMask == PhysicsCategoryConstants.wall
+            || firstBody.categoryBitMask == PhysicsCategoryConstants.wall
+            && secondBody.categoryBitMask == PhysicsCategoryConstants.bat {
+            
+            if died == false {
+                died = true
+            }
+        }
+        
+        if firstBody.categoryBitMask == PhysicsCategoryConstants.bat
+            && secondBody.categoryBitMask == PhysicsCategoryConstants.score
+            || firstBody.categoryBitMask == PhysicsCategoryConstants.score
+            && secondBody.categoryBitMask == PhysicsCategoryConstants.bat {
+            
+            score += 1
+            print(score)
+        }
     }
     
-    func touchMoved(toPoint pos : CGPoint) {
-
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-
-    }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         sinceLastTouch = 0
         
         if gameStarted == false {
             gameStarted = true
+            died = false
             
             moveWalls()
             
@@ -195,28 +235,18 @@ class GameScene: SKScene {
             bat.physicsBody?.applyAngularImpulse(0.02)
             
         } else {
-            
-            bat.run(batAnimation)
-            bat.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-            bat.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 80))
-            bat.physicsBody?.applyAngularImpulse(0.02)
-            
+            if died == false {
+                
+                bat.run(batAnimation)
+                bat.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+                bat.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 80))
+                bat.physicsBody?.applyAngularImpulse(0.02)
+                
+            }
         }
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-    }
-    
-    
+
     override func update(_ currentTime: TimeInterval) {
         
         //Bat Rotation
@@ -235,7 +265,6 @@ class GameScene: SKScene {
             bat.texture = SKTexture(imageNamed: "bat2")
         }
         
-        
         moveBackground(movementSpeed: 5, name: "grass")
         moveBackground(movementSpeed: 5, name: "ground")
         moveBackground(movementSpeed: 4, name: "nearTrees")
@@ -245,7 +274,4 @@ class GameScene: SKScene {
         moveBackground(movementSpeed: 1, name: "moon")
         
     }
-    
-    
-
 }
