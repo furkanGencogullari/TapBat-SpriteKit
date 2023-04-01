@@ -48,12 +48,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    func moveBackground(movementSpeed: CGFloat, name: String) {
+    func moveBackground(movementSpeed: CGFloat, name: String, repeats: Bool) {
         enumerateChildNodes(withName: name) { node, error in
             let backgroundNode = node as! SKSpriteNode
             backgroundNode.position = CGPoint(x: backgroundNode.position.x - movementSpeed , y: backgroundNode.position.y)
-            if backgroundNode.position.x <= -backgroundNode.size.width {
-                backgroundNode.position = CGPointMake(backgroundNode.position.x + backgroundNode.size.width * 2, backgroundNode.position.y)
+            if repeats == true {
+                if backgroundNode.position.x <= -backgroundNode.size.width {
+                    backgroundNode.position = CGPointMake(backgroundNode.position.x + backgroundNode.size.width * 2, backgroundNode.position.y)
+                }
             }
         }
     }
@@ -92,7 +94,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         floorPhysicsNode.physicsBody = SKPhysicsBody(rectangleOf: floorPhysicsNode.size)
         floorPhysicsNode.physicsBody?.affectedByGravity = false
         floorPhysicsNode.physicsBody?.isDynamic = false
-        
     }
     
     
@@ -166,7 +167,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         wallPair.addChild(bottomWall)
         wallPair.addChild(scoreNode)
         
-        let randomPosition = CGFloat.random(min: -200, max: 200)
+        let randomPosition = CGFloat.random(min: -190, max: 190)
         wallPair.position.y = wallPair.position.y + randomPosition
         wallPair.zPosition = 7
         wallPair.run(moveAndRemoveWalls)
@@ -192,14 +193,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         restartButton.size = CGSize(width: 627 / 1.5, height: 160 / 1.5)
         restartButton.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 2.6)
         restartButton.zPosition = 8
-        
-        let moveUp = SKAction.moveBy(x: 0, y: 10, duration: 0.5)
-        let moveDown = SKAction.moveBy(x: 0, y: -10, duration: 0.5)
+    
+        moveNodeUpAndDown(restartButton, by: 10, duration: 0.5)
+        self.addChild(restartButton)
+    }
+    
+    
+    func moveNodeUpAndDown(_ node: SKSpriteNode ,by i: Double, duration: Double) {
+        let moveUp = SKAction.moveBy(x: 0, y: i, duration: duration)
+        let moveDown = SKAction.moveBy(x: 0, y: -i, duration: duration)
         let sequence = SKAction.sequence([moveUp, moveDown])
         let foreverSeq = SKAction.repeatForever(sequence)
-        restartButton.run(foreverSeq)
-        self.addChild(restartButton)
+        node.run(foreverSeq)
+    }
+    
+    
+    func createTitleLogo() {
+        let tapBatLogo = SKSpriteNode(imageNamed: "tapBatLogo")
+        tapBatLogo.size = CGSize(width: 690 / 1.5, height: 371 / 1.5)
+        tapBatLogo.position = CGPoint(x: self.frame.width / 2 , y: self.frame.height / 1.5)
+        tapBatLogo.zPosition = 8
+        tapBatLogo.name = "logo"
+        self.addChild(tapBatLogo)
         
+        moveNodeUpAndDown(tapBatLogo, by: 15, duration: 1)
     }
     
     
@@ -226,12 +243,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createBackground()
         createBat()
         createScoreLabel()
+        createTitleLogo()
+        
         self.physicsWorld.contactDelegate = self
+
     }
     
     
     override func didMove(to view: SKView) {
+        
         startGame()
+        
     }
     
     
@@ -275,13 +297,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             bat.physicsBody?.isDynamic = true
             
 
-            let moveBat = SKAction.moveBy(x: -50, y: 0, duration: 0.5)
+            let moveBat = SKAction.moveBy(x: -100, y: 0, duration: 0.5)
             
             bat.run(batAnimation)
             bat.run(moveBat)
             bat.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
             bat.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 80))
             bat.physicsBody?.applyAngularImpulse(0.02)
+            
             
         } else {
             if died == false {
@@ -290,10 +313,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 bat.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
                 bat.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 80))
                 bat.physicsBody?.applyAngularImpulse(0.02)
-                
             }
         }
-        
         
         for touch in touches {
             let location = touch.location(in: self)
@@ -314,6 +335,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if sinceLastTouch > 1.0 {
             bat.physicsBody?.applyAngularImpulse(-0.01)
         }
+        
         bat.zRotation.clamp(v1: CGFloat(20).degreesToRadians(), CGFloat(-90).degreesToRadians())
         bat.physicsBody?.angularVelocity.clamp(v1: -1, 3)
         
@@ -324,13 +346,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             bat.texture = SKTexture(imageNamed: "bat2")
         }
         
-        moveBackground(movementSpeed: 5, name: "grass")
-        moveBackground(movementSpeed: 5, name: "ground")
-        moveBackground(movementSpeed: 4, name: "nearTrees")
-        moveBackground(movementSpeed: 3, name: "midTrees")
-        moveBackground(movementSpeed: 2, name: "farTrees")
-        moveBackground(movementSpeed: 1.3, name: "stars")
-        moveBackground(movementSpeed: 1, name: "moon")
+        moveBackground(movementSpeed: 5, name: "grass", repeats: true)
+        moveBackground(movementSpeed: 5, name: "ground", repeats: true)
+        moveBackground(movementSpeed: 4, name: "nearTrees", repeats: true)
+        moveBackground(movementSpeed: 3, name: "midTrees", repeats: true)
+        moveBackground(movementSpeed: 2, name: "farTrees", repeats: true)
+        moveBackground(movementSpeed: 1.3, name: "stars", repeats: true)
+        moveBackground(movementSpeed: 1, name: "moon", repeats: true)
         
+        if gameStarted == true {
+            moveBackground(movementSpeed: 5, name: "logo", repeats: false)
+        }
     }
 }
