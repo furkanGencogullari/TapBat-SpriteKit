@@ -9,8 +9,11 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    
+    let d = UserDefaults.standard
+    
     var bat = SKSpriteNode()
-    var batAnimation = SKAction()
+    var batFlapAnimation = SKAction()
     
     var sinceLastTouch: Double = 0
     var gameStarted = Bool()
@@ -27,8 +30,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var wallPair = SKNode()
     var moveAndRemoveWalls = SKAction()
     
-    let d = UserDefaults.standard
-    
     
     func restartGame() {
         self.removeAllChildren()
@@ -42,32 +43,56 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         startGame()
     }
     
+    
     func getHighscore() {
         highscore = d.integer(forKey: "Score")
         highScoreLabel.text = "Highscore: \(highscore)"
     }
     
     
-    func setLayer(node: SKSpriteNode, name: String, zPosition: CGFloat, i: Int) {
-        node.size = backgroundSize
-        node.anchorPoint = CGPointZero
-        node.position = CGPointMake(CGFloat(i) * node.frame.width, -100)
-        node.name = name
-        node.zPosition = zPosition
-        self.addChild(node)
+    func createScoreLabel() {
+        scoreLabel.fontSize = 60
+        scoreLabel.fontName = "Press Start 2P Regular"
+        scoreLabel.fontColor = UIColor(red: 111/255, green: 49/255, blue: 152/255, alpha: 1)
+        scoreLabel.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 1.3)
+        scoreLabel.zPosition = 8
+        scoreLabel.isHidden = true
+        self.addChild(scoreLabel)
     }
     
     
-    func moveBackground(movementSpeed: CGFloat, name: String, repeats: Bool) {
-        enumerateChildNodes(withName: name) { node, error in
-            let backgroundNode = node as! SKSpriteNode
-            backgroundNode.position = CGPoint(x: backgroundNode.position.x - movementSpeed , y: backgroundNode.position.y)
-            if repeats == true {
-                if backgroundNode.position.x <= -backgroundNode.size.width {
-                    backgroundNode.position = CGPointMake(backgroundNode.position.x + backgroundNode.size.width * 2, backgroundNode.position.y)
-                }
-            }
-        }
+    func createRestartButton() {
+        
+        restartButton = SKSpriteNode(imageNamed: "restartButton")
+        restartButton.size = CGSize(width: 627 / 1.5, height: 160 / 1.5)
+        restartButton.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 2.6)
+        restartButton.zPosition = 8
+        
+        moveNodeUpAndDown(restartButton, by: 10, duration: 0.5)
+        self.addChild(restartButton)
+    }
+    
+    
+    func createTitleLogo() {
+        let tapBatLogo = SKSpriteNode(imageNamed: "tapBatLogo")
+        tapBatLogo.size = CGSize(width: 690 / 1.5, height: 371 / 1.5)
+        tapBatLogo.position = CGPoint(x: self.frame.width / 2 , y: self.frame.height / 1.5)
+        tapBatLogo.zPosition = 8
+        tapBatLogo.name = "logo"
+        self.addChild(tapBatLogo)
+        
+        moveNodeUpAndDown(tapBatLogo, by: 15, duration: 1)
+    }
+    
+    
+    func createHighscoreLabel() {
+        highScoreLabel.fontSize = 30
+        highScoreLabel.fontName = "Press Start 2P Regular"
+        highScoreLabel.fontColor = UIColor(red: 111/255, green: 49/255, blue: 152/255, alpha: 1)
+        highScoreLabel.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 9)
+        highScoreLabel.zPosition = 10
+        
+        self.addChild(highScoreLabel)
     }
     
     
@@ -107,6 +132,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
+    func setLayer(node: SKSpriteNode, name: String, zPosition: CGFloat, i: Int) {
+        node.size = backgroundSize
+        node.anchorPoint = CGPointZero
+        node.position = CGPointMake(CGFloat(i) * node.frame.width, -100)
+        node.name = name
+        node.zPosition = zPosition
+        self.addChild(node)
+    }
+    
+    
+    func moveBackground(movementSpeed: CGFloat, name: String, repeats: Bool) {
+        enumerateChildNodes(withName: name) { node, error in
+            let backgroundNode = node as! SKSpriteNode
+            backgroundNode.position = CGPoint(x: backgroundNode.position.x - movementSpeed , y: backgroundNode.position.y)
+            if repeats == true {
+                if backgroundNode.position.x <= -backgroundNode.size.width {
+                    backgroundNode.position = CGPointMake(backgroundNode.position.x + backgroundNode.size.width * 2, backgroundNode.position.y)
+                }
+            }
+        }
+    }
+    
+    
     func createBat() {
         bat = SKSpriteNode(imageNamed: "bat2")
         bat.size = CGSize(width: 70, height: 70)
@@ -129,7 +177,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         batTextures.append(SKTexture(imageNamed: "bat2"))
         batTextures.append(SKTexture(imageNamed: "bat3"))
         
-        batAnimation = SKAction.animate(with: batTextures, timePerFrame: 0.1)
+        batFlapAnimation = SKAction.animate(with: batTextures, timePerFrame: 0.1)
     }
     
     
@@ -186,63 +234,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    func createScoreLabel() {
-        scoreLabel.fontSize = 60
-        scoreLabel.fontName = "Press Start 2P Regular"
-        scoreLabel.fontColor = UIColor(red: 111/255, green: 49/255, blue: 152/255, alpha: 1)
-        scoreLabel.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 1.3)
-        scoreLabel.zPosition = 8
-        scoreLabel.isHidden = true
-        self.addChild(scoreLabel)
-    }
-    
-    
-
-    
-    
-    func createRestartButton() {
-        
-        restartButton = SKSpriteNode(imageNamed: "restartButton")
-        restartButton.size = CGSize(width: 627 / 1.5, height: 160 / 1.5)
-        restartButton.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 2.6)
-        restartButton.zPosition = 8
-    
-        moveNodeUpAndDown(restartButton, by: 10, duration: 0.5)
-        self.addChild(restartButton)
-    }
-    
-    
-    func moveNodeUpAndDown(_ node: SKSpriteNode ,by i: Double, duration: Double) {
-        let moveUp = SKAction.moveBy(x: 0, y: i, duration: duration)
-        let moveDown = SKAction.moveBy(x: 0, y: -i, duration: duration)
-        let sequence = SKAction.sequence([moveUp, moveDown])
-        let foreverSeq = SKAction.repeatForever(sequence)
-        node.run(foreverSeq)
-    }
-    
-    
-    func createTitleLogo() {
-        let tapBatLogo = SKSpriteNode(imageNamed: "tapBatLogo")
-        tapBatLogo.size = CGSize(width: 690 / 1.5, height: 371 / 1.5)
-        tapBatLogo.position = CGPoint(x: self.frame.width / 2 , y: self.frame.height / 1.5)
-        tapBatLogo.zPosition = 8
-        tapBatLogo.name = "logo"
-        self.addChild(tapBatLogo)
-        
-        moveNodeUpAndDown(tapBatLogo, by: 15, duration: 1)
-    }
-    
-    func createHighscoreLabel() {
-        highScoreLabel.fontSize = 30
-        highScoreLabel.fontName = "Press Start 2P Regular"
-        highScoreLabel.fontColor = UIColor(red: 111/255, green: 49/255, blue: 152/255, alpha: 1)
-        highScoreLabel.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 9)
-        highScoreLabel.zPosition = 10
-        
-        self.addChild(highScoreLabel)
-    }
-    
-    
     func moveWalls() {
         let spawnWalls = SKAction.run({
             () in
@@ -262,6 +253,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
+    func moveNodeUpAndDown(_ node: SKSpriteNode ,by i: Double, duration: Double) {
+        let moveUp = SKAction.moveBy(x: 0, y: i, duration: duration)
+        let moveDown = SKAction.moveBy(x: 0, y: -i, duration: duration)
+        let sequence = SKAction.sequence([moveUp, moveDown])
+        let foreverSeq = SKAction.repeatForever(sequence)
+        node.run(foreverSeq)
+    }
+    
+    
     func startGame() {
         createBackground()
         createBat()
@@ -271,14 +271,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createHighscoreLabel()
         
         self.physicsWorld.contactDelegate = self
-
     }
     
     
     override func didMove(to view: SKView) {
-        
         startGame()
-        
     }
     
     
@@ -324,20 +321,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             bat.physicsBody?.affectedByGravity = true
             bat.physicsBody?.isDynamic = true
             
-
             let moveBat = SKAction.moveBy(x: -100, y: 0, duration: 0.5)
             
-            bat.run(batAnimation)
+            bat.run(batFlapAnimation)
             bat.run(moveBat)
             bat.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
             bat.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 80))
             bat.physicsBody?.applyAngularImpulse(0.02)
             
-            
         } else {
             if died == false {
                 
-                bat.run(batAnimation)
+                bat.run(batFlapAnimation)
                 bat.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
                 bat.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 80))
                 bat.physicsBody?.applyAngularImpulse(0.02)
@@ -356,9 +351,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     override func update(_ currentTime: TimeInterval) {
-        //Bat Rotation
         sinceLastTouch += 0.1
         
+        //Bat Rotation
         if sinceLastTouch > 1.0 {
             bat.physicsBody?.applyAngularImpulse(-0.01)
         }
@@ -366,7 +361,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bat.zRotation.clamp(v1: CGFloat(20).degreesToRadians(), CGFloat(-90).degreesToRadians())
         bat.physicsBody?.angularVelocity.clamp(v1: -1, 3)
         
-        //Bat Texture According to Rotation
+        //Bat's Texture for Rotation
         if bat.zRotation < -0.2 {
             bat.texture = SKTexture(imageNamed: "bat3")
         } else {
@@ -386,5 +381,5 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             highScoreLabel.isHidden = true
         }
     }
-
+    
 }
