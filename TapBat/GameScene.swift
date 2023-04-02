@@ -22,7 +22,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var highscore = 0
     
     let scoreLabel = SKLabelNode()
+    let scoreLabelShadow = SKLabelNode()
     let highScoreLabel = SKLabelNode()
+    let highscoreLabelShadow = SKLabelNode()
     var restartButton = SKSpriteNode()
     
     let backgroundSize = CGSize(width: 1920 * 1.4, height: 1080 * 1.4)
@@ -38,7 +40,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         score = 0
         gameStarted = false
         scoreLabel.isHidden = true
+        scoreLabelShadow.isHidden = true
         highScoreLabel.isHidden = false
+        highscoreLabelShadow.isHidden = false
         sinceLastTouch = 0
         startGame()
     }
@@ -47,6 +51,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func getHighscore() {
         highscore = d.integer(forKey: "Score")
         highScoreLabel.text = "Highscore: \(highscore)"
+        highscoreLabelShadow.text = highScoreLabel.text
     }
     
     
@@ -55,14 +60,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel.fontName = "Press Start 2P Regular"
         scoreLabel.fontColor = UIColor(red: 111/255, green: 49/255, blue: 152/255, alpha: 1)
         scoreLabel.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 1.3)
-        scoreLabel.zPosition = 8
+        scoreLabel.zPosition = 9
         scoreLabel.isHidden = true
         self.addChild(scoreLabel)
+        
+        scoreLabelShadow.fontSize = scoreLabel.fontSize
+        scoreLabelShadow.fontName = scoreLabel.fontName
+        scoreLabelShadow.position = CGPoint(x: scoreLabel.position.x + 3, y: scoreLabel.position.y - 3)
+        scoreLabelShadow.zPosition = scoreLabel.zPosition - 1
+        scoreLabelShadow.color = .white
+        scoreLabel.isHidden = true
+        self.addChild(scoreLabelShadow)
+        
     }
     
     
     func createRestartButton() {
-        
         restartButton = SKSpriteNode(imageNamed: "restartButton")
         restartButton.size = CGSize(width: 627 / 1.5, height: 160 / 1.5)
         restartButton.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 2.6)
@@ -86,13 +99,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     func createHighscoreLabel() {
-        highScoreLabel.fontSize = 30
+        highScoreLabel.fontSize = 25
         highScoreLabel.fontName = "Press Start 2P Regular"
         highScoreLabel.fontColor = UIColor(red: 111/255, green: 49/255, blue: 152/255, alpha: 1)
-        highScoreLabel.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 9)
+        highScoreLabel.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 9.9)
         highScoreLabel.zPosition = 10
-        
         self.addChild(highScoreLabel)
+        
+        highscoreLabelShadow.fontSize = highScoreLabel.fontSize
+        highscoreLabelShadow.fontName = highScoreLabel.fontName
+        highscoreLabelShadow.position = CGPoint(x: highScoreLabel.position.x + 2, y: highScoreLabel.position.y - 2)
+        highscoreLabelShadow.zPosition = highScoreLabel.zPosition - 1
+        highscoreLabelShadow.color = .black
+        self.addChild(highscoreLabelShadow)
     }
     
     
@@ -297,14 +316,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        if firstBody.categoryBitMask == PhysicsCategoryConstants.bat
-            && secondBody.categoryBitMask == PhysicsCategoryConstants.score
-            || firstBody.categoryBitMask == PhysicsCategoryConstants.score
-            && secondBody.categoryBitMask == PhysicsCategoryConstants.bat {
-            
-            score += 1
-            scoreLabel.isHidden = false
-            scoreLabel.text = "\(score)"
+        if died == false {
+            if firstBody.categoryBitMask == PhysicsCategoryConstants.bat
+                && secondBody.categoryBitMask == PhysicsCategoryConstants.score
+                || firstBody.categoryBitMask == PhysicsCategoryConstants.score
+                && secondBody.categoryBitMask == PhysicsCategoryConstants.bat {
+                
+                score += 1
+                scoreLabel.isHidden = false
+                scoreLabelShadow.isHidden = false
+                scoreLabel.text = "\(score)"
+                scoreLabelShadow.text = scoreLabel.text
+            }
         }
     }
     
@@ -379,6 +402,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if gameStarted == true {
             moveBackground(movementSpeed: 5, name: "logo", repeats: false)
             highScoreLabel.isHidden = true
+            highscoreLabelShadow.isHidden = true
         }
     }
     
